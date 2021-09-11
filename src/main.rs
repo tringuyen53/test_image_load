@@ -112,7 +112,7 @@ async fn main() -> Result<(), ()> {
                     Ok(image) => image,
                     Err(_) => return Err(()),
                 };
-                img.save(format!("img-{}.jpg", count)).unwrap();
+                // img.save(format!("img-{}.jpg", count)).unwrap();
                 let img16 = img.into_rgb8();
                 let data = img16.into_raw() as Vec<u8>;
                 println!("Image length: {}", data.len());
