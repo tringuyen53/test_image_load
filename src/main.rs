@@ -6,7 +6,7 @@ use image::{GenericImage, GenericImageView, ImageBuffer, ImageFormat, RgbImage};
 use std::collections::HashMap;
 use std::fs::File;
 use std::fs::OpenOptions;
-
+use reqwest::Url;
 #[tokio::main]
 async fn main() -> Result<(), ()> {
     // let resp = reqwest::get("http://vietnam:L3xRay123!@10.50.29.56/jpgimage/1/image.jpg")
@@ -48,56 +48,85 @@ async fn main() -> Result<(), ()> {
     // let cam_url = "http://10.50.12.180:80/mjpgstreamreq/1/image.jpg?resolution=640x480";
     // let cam_url = "http://vietnam:L3xRay123!@10.50.31.178/mjpg/1/video.mjpg";
     // let cam_url = "http://10.50.29.64/axis-cgi/mjpg/video.cgi";
-    let cam_url = "http://vietnam:L3xRay123!@10.50.29.64/mjpg/1/video.mjpg"; //digest
+    // let cam_url = "http://vietnam:L3xRay123!@10.50.29.64/mjpg/1/video.mjpg"; //digest
     // let cam_url = "http://climatecam.gi.alaska.edu/mjpg/video.mjpg";
-    // let cam_url = "http://10.50.31.178/mjpg/1/video.mjpg?resolution=640x480"; //digest
+    // let cam_url = "http://vietnam:L3xRay123!@10.50.31.178/mjpg/1/video.mjpg?resolution=640x480"; //digest
     // let cam_url = "http://vietnam:L3xRay123!@10.50.29.117/mjpgstreamreq/1/image.jpg";
     // let cam_url = "http://vietnam:L3xRay123!@10.50.29.56/mjpgstreamreq/1/image.jpg";
     // let cam_url = "http://10.50.31.39/mjpg/1/video.mjpg?resolution=640x480";
     // let cam_url = "http://10.50.29.36/mjpgstreamreq/1/image.jpg";
-    // let cam_url = "http://vietnam:L3xRay123!@10.50.13.89/mjpgstreamreq/1/image.jpg";
+    let cam_url = "http://vietnam:L3xRay123!@10.50.13.89/mjpgstreamreq/1/image.jpg";
     // let cam_url = "http://10.50.29.36:80/mjpgstreamreq/1/image.jpg?resolution=640x480";
     // let cam_url = "http://10.50.29.64/mjpg/1/video.mjpg";
     // let cam_url = "http://10.50.31.241/mjpg/1/video.mjpg";
     //unauth
     // let cam_url = "http://10.50.13.23/mjpgstreamreq/1/image.jpg";
+    // let cam_url = "http://10.50.29.32/mjpgstreamreq/1/image.jpg";
     let mut count: i32 = 1;
 
-    let mut answer = "".to_string();
-    let res = client.get(cam_url).send().await.unwrap();
-    // println!("[CAMERA] CAMERA STATUS {:?}", res.status());
-    let (usr, pwd, digest_cam_url) = split_authorize_for_digest_auth(cam_url);
+    // let mut answer = "".to_string();
+    // let res = client.get(cam_url).send().await.unwrap();
+    // // println!("[CAMERA] CAMERA STATUS {:?}", res.status());
+    // let (usr, pwd, digest_cam_url) = split_authorize_for_digest_auth(cam_url);
 
-    let headers = res.headers();
-    if headers.contains_key("www-authenticate".to_string()) {
-        println!("CONTAIN www authenticate");
-        println!("Digest url: {}", digest_cam_url);
-        let digest_res = client.get(digest_cam_url.as_str()).send().await.unwrap();
-    // println!("[CAMERA] CAMERA STATUS {:?}", res.status());
-        let digest_headers = digest_res.headers();
-        let wwwauth = digest_headers["www-authenticate"].to_str().unwrap_or("");
-        let uri: Uri = digest_cam_url.parse().unwrap();
-        println!("Uri: {:?}", uri.path());
-        let context = AuthContext::new(usr, pwd, uri.path());
-        let mut prompt = digest_auth::parse(wwwauth).unwrap();
-        answer = prompt.respond(&context).unwrap().to_header_string();
-    } 
-    println!("ANSWER: {}", answer);
-    println!("CAM URL: {}", cam_url);
+    // let headers = res.headers();
+    // println!("Header: {:?}", headers);
+    // if headers.contains_key("www-authenticate".to_string()) {
+    //     println!("CONTAIN www authenticate");
+    //     println!("Digest url: {}", digest_cam_url);
+    //     // let digest_res = client.get(digest_cam_url.as_str()).send().await.unwrap();
+    // // println!("[CAMERA] CAMERA STATUS {:?}", res.status());
+    //     let digest_headers = res.headers();
+    //     let wwwauth = digest_headers["www-authenticate"].to_str().unwrap_or("");
+    //     let uri: Uri = digest_cam_url.parse().unwrap();
+    //     println!("Uri: {:?}", uri.path());
+    //     let context = AuthContext::new(usr, pwd, uri.path());
+    //     let mut prompt = digest_auth::parse(wwwauth).unwrap();
+    //     answer = prompt.respond(&context).unwrap().to_header_string();
+    // } 
+    // println!("ANSWER: {}", answer);
+    // println!("CAM URL: {}", cam_url);
+    // println!("usr: {} - pwd: {}", usr, pwd);
 
-    
+    let mut answer = String::new();
+
+    let basic_url = Url::parse(cam_url).unwrap();
+    let username = basic_url.username();
+    let password = basic_url.password().unwrap_or_default();
+
+    let mut digest_url = basic_url.clone();
+    digest_url.set_username("");
+    digest_url.set_password(None);
+    println!("CAM URL: {}", digest_url);
+    println!("usr: {} - pwd: {}", username, password);
+    let resp = client.head(cam_url).send().await.unwrap();
+    let header = resp.headers();
+
+    if let Some(value) = header.get("www-authenticate") {
+        if let Ok(value) = value.to_str() {
+            match value.split_once(' ').unwrap_or_default().0 {
+                "Digest" => {
+                    let mut prompt = digest_auth::parse(value).unwrap();
+                    let context = AuthContext::new(username, password, basic_url.path());
+                    answer = prompt.respond(&context).unwrap().to_header_string();
+                },
+                _ => {}
+            }
+        }
+    }
+
 
     loop {
         let response = match answer.as_str() {
             "" => client
-                .get(cam_url)
-                // .basic_auth("vietnam", Some("L3xRay123!"))
+                .get(digest_url.as_str())
+                .basic_auth(username, Some(password))
                 // .header(reqwest::header::AUTHORIZATION, answer.clone())
                 .send()
                 .await
                 .unwrap(),
             _ => client
-                .get(digest_cam_url.as_str())
+                .get(digest_url.as_str())
                 // .basic_auth("vietnam", Some("L3xRay123!"))
                 .header(reqwest::header::AUTHORIZATION, answer.clone())
                 .send()
