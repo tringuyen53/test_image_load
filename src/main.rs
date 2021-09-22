@@ -59,12 +59,13 @@ async fn main() -> Result<(), ()> {
     // let cam_url = "http://10.50.29.36:80/mjpgstreamreq/1/image.jpg?resolution=640x480";
     // let cam_url = "http://10.50.29.64/mjpg/1/video.mjpg";
     // let cam_url = "http://10.50.31.241/mjpg/1/video.mjpg";
-    //unauth
+    // unauth
     // let cam_url = "http://10.50.13.23/mjpgstreamreq/1/image.jpg";
+    
     let mut count: i32 = 1;
 
     let mut answer = "".to_string();
-    let res = client.get(cam_url).send().await.unwrap();
+    let res = client.head(cam_url).send().await.unwrap();
     // println!("[CAMERA] CAMERA STATUS {:?}", res.status());
     let (usr, pwd, digest_cam_url) = split_authorize_for_digest_auth(cam_url);
 
@@ -72,8 +73,8 @@ async fn main() -> Result<(), ()> {
     if headers.contains_key("www-authenticate".to_string()) {
         println!("CONTAIN www authenticate");
         println!("Digest url: {}", digest_cam_url);
-        let digest_res = client.get(digest_cam_url.as_str()).send().await.unwrap();
-    // println!("[CAMERA] CAMERA STATUS {:?}", res.status());
+        let digest_res = client.head(digest_cam_url.as_str()).send().await.unwrap();
+        // println!("[CAMERA] CAMERA STATUS {:?}", res.status());
         let digest_headers = digest_res.headers();
         let wwwauth = digest_headers["www-authenticate"].to_str().unwrap_or("");
         let uri: Uri = digest_cam_url.parse().unwrap();
@@ -81,11 +82,9 @@ async fn main() -> Result<(), ()> {
         let context = AuthContext::new(usr, pwd, uri.path());
         let mut prompt = digest_auth::parse(wwwauth).unwrap();
         answer = prompt.respond(&context).unwrap().to_header_string();
-    } 
+    }
     println!("ANSWER: {}", answer);
     println!("CAM URL: {}", cam_url);
-
-    
 
     loop {
         let response = match answer.as_str() {
@@ -193,7 +192,7 @@ fn split_authorize_for_digest_auth(cam_url: &str) -> (&str, &str, String) {
         println!("auth_path: {}", auth_path);
         let usr_pwd: Vec<&str> = auth_path.split(':').collect();
         println!("usr: {} - pwd: {}", usr_pwd[0], usr_pwd[1]);
-        let url = format!("http://{}",tokens[1]);
+        let url = format!("http://{}", tokens[1]);
         (usr_pwd[0], usr_pwd[1], url)
     } else {
         ("", "", cam_url.to_string())
