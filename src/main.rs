@@ -3,10 +3,10 @@ use futures_util::StreamExt;
 use http::Uri;
 use image;
 use image::{GenericImage, GenericImageView, ImageBuffer, ImageFormat, RgbImage};
+use reqwest::Url;
 use std::collections::HashMap;
 use std::fs::File;
 use std::fs::OpenOptions;
-use reqwest::Url;
 #[tokio::main]
 async fn main() -> Result<(), ()> {
     // let resp = reqwest::get("http://vietnam:L3xRay123!@10.50.29.56/jpgimage/1/image.jpg")
@@ -55,84 +55,91 @@ async fn main() -> Result<(), ()> {
     // let cam_url = "http://vietnam:L3xRay123!@10.50.29.56/mjpgstreamreq/1/image.jpg";
     // let cam_url = "http://10.50.31.39/mjpg/1/video.mjpg?resolution=640x480";
     // let cam_url = "http://10.50.29.36/mjpgstreamreq/1/image.jpg";
-    let cam_url = "http://vietnam:L3xRay123!@10.50.13.89/mjpgstreamreq/1/image.jpg";
+    // let cam_url = "http://vietnam:L3xRay123!@10.50.13.89/mjpgstreamreq/1/image.jpg";
     // let cam_url = "http://10.50.29.36:80/mjpgstreamreq/1/image.jpg?resolution=640x480";
-    // let cam_url = "http://10.50.29.64/mjpg/1/video.mjpg";
     // let cam_url = "http://10.50.31.241/mjpg/1/video.mjpg";
+    // let cam_url = "http://vietnam:L3xRay123!@10.50.30.212/mjpgstreamreq/1/image.jpg";
+    // let cam_url = "http://vietnam:L3xRay123!@10.50.13.89/mjpgstreamreq/1/image.jpg";
+    // let cam_url = "http://vietnam:L3xRay12@10.50.31.179/mjpg/1/video.mjpg";
+    // let cam_url = "http://vietnam:L3xRay12@10.50.31.179:80/mjpg/1/video.mjpg";
+    // let cam_url = "http://vietnam:L3xRay123@10.50.12.187:80/video/mjpeg/stream2";
+    // let cam_url = "http://10.50.13.23/mjpgstreamreq/1/image.jpg";
+    // let cam_url = "http://vietnam:L3xRay123!@10.50.30.108/mjpgstreamreq/1/image.jpg";
+    // let cam_url = "http://vietnam:L3xRay123!@10.50.29.36/jpgimage/1/image.jpg";
+    // let cam_url = "http://vietnam:L3xRay123!@10.50.29.22/mjpgstreamreq/1/image.jpg";
     // unauth
+    // let cam_url = "http://10.50.30.100/mjpgstreamreq/1/image.jpg";
     // let cam_url = "http://10.50.13.23/mjpgstreamreq/1/image.jpg";
     // let cam_url = "http://10.50.29.32/mjpgstreamreq/1/image.jpg";
+    // let cam_url = "http://10.50.29.96/mjpgstreamreq/1/image.jpg";
+    // let cam_url = "http://10.50.30.197/mjpgstreamreq/1/image.jpg";
+    let cam_url = "http://10.50.29.77/mjpgstreamreq/1/image.jpg";
+    // let cam_url = "http://10.50.30.118/mjpgstreamreq/1/image.jpg";
+    // let cam_url = "http://10.50.31.236/mjpgstreamreq/1/image.jpg";
+    // let cam_url = "http://10.50.31.241/mjpg/1/video.mjpg";
+    // let cam_url = "http://10.50.29.162/mjpgstreamreq/1/image.jpg";
+    // let cam_url = "http://10.50.31.171/mjpgstreamreq/1/image.jpg";
+    // let cam_url = "http://10.50.31.53/mjpgstreamreq/1/image.jpg";
+    // let cam_url = "http://10.50.31.172/mjpgstreamreq/1/image.jpg";
+    // let cam_url = "http://10.50.31.78/mjpgstreamreq/1/image.jpg";
+    // let cam_url = "http://10.50.31.74/mjpgstreamreq/1/image.jpg";
+    // let cam_url = "http://10.50.31.169/mjpgstreamreq/1/image.jpg";
     let mut count: i32 = 1;
 
-    // let mut answer = "".to_string();
-    // let res = client.get(cam_url).send().await.unwrap();
-    // // println!("[CAMERA] CAMERA STATUS {:?}", res.status());
-    // let (usr, pwd, digest_cam_url) = split_authorize_for_digest_auth(cam_url);
-
-    // let headers = res.headers();
-    // println!("Header: {:?}", headers);
-    // if headers.contains_key("www-authenticate".to_string()) {
-    //     println!("CONTAIN www authenticate");
-    //     println!("Digest url: {}", digest_cam_url);
-    //     // let digest_res = client.get(digest_cam_url.as_str()).send().await.unwrap();
-    // // println!("[CAMERA] CAMERA STATUS {:?}", res.status());
-    //     let digest_headers = res.headers();
-    //     let wwwauth = digest_headers["www-authenticate"].to_str().unwrap_or("");
-    //     let uri: Uri = digest_cam_url.parse().unwrap();
-    //     println!("Uri: {:?}", uri.path());
-    //     let context = AuthContext::new(usr, pwd, uri.path());
-    //     let mut prompt = digest_auth::parse(wwwauth).unwrap();
-    //     answer = prompt.respond(&context).unwrap().to_header_string();
-    // } 
-    // println!("ANSWER: {}", answer);
-    // println!("CAM URL: {}", cam_url);
-    // println!("usr: {} - pwd: {}", usr, pwd);
-
     let mut answer = String::new();
+    let basic_url = Url::parse(cam_url).unwrap();
+    let username = basic_url.username();
+    let password = basic_url.password().unwrap_or_default();
 
-    let url = Url::parse(cam_url).unwrap();
-    let username = url.username();
-    let password = url.password().unwrap_or_default();
+    let mut digest_url = basic_url.clone();
+    digest_url.set_username("");
+    digest_url.set_password(None);
+    // digest_url.set_port(Some(80));
 
-    let mut url = url.clone();
-    url.set_username("");
-    url.set_password(None);
-
-    println!("CAM URL: {}", url);
-    println!("usr: {} - pwd: {}", username, password);
-    let resp = client.head(cam_url).send().await.unwrap();
+    let resp = client.get(digest_url.as_str()).send().await.unwrap();
     let header = resp.headers();
-
+    println!("Header: {:?}", header);
+    println!("CAM URL: {}", basic_url);
+    println!("CAM DIGEST URL: {}", digest_url);
+    // println!("Port: {:?}", basic_url.port());
+    println!("usr: {} - pwd: {}", username, password);
+    // println!("[CAMERA] CAMERA STATUS {:?}", resp.status());
     if let Some(value) = header.get("www-authenticate") {
         if let Ok(value) = value.to_str() {
             match value.split_once(' ').unwrap_or_default().0 {
                 "Digest" => {
+                    println!("Digest Camera.");
                     let mut prompt = digest_auth::parse(value).unwrap();
-                    let context = AuthContext::new(username, password, url.path());
+                    let context = AuthContext::new(username, password, digest_url.path());
                     answer = prompt.respond(&context).unwrap().to_header_string();
-                },
+                    println!("Answer: {:?}", answer);
+                }
                 _ => {}
             }
         }
     }
 
-
     loop {
         let response = match answer.as_str() {
-            "" => client
-                .get(url.as_str())
-                .basic_auth(username, Some(password))
+            "" => {
+                println!("Basic: {:?}", basic_url.port());
+                client
+                .get(cam_url)
+                // .basic_auth(username, Some(password))
                 // .header(reqwest::header::AUTHORIZATION, answer.clone())
                 .send()
                 .await
-                .unwrap(),
-            _ => client
-                .get(url.as_str())
-                // .basic_auth("vietnam", Some("L3xRay123!"))
-                .header(reqwest::header::AUTHORIZATION, answer.clone())
-                .send()
-                .await
-                .unwrap(),
+                .unwrap()},
+            _ => {
+                println!("Digest: {:?}", basic_url.port());
+                client
+                    .get(digest_url.as_str())
+                    // .basic_auth("vietnam", Some("L3xRay123!"))
+                    .header(reqwest::header::AUTHORIZATION, answer.clone())
+                    .send()
+                    .await
+                    .unwrap()
+            }
         };
 
         println!("[CAMERA] CAMERA STATUS {:?}", response.status());
