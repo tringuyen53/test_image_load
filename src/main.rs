@@ -9,31 +9,26 @@ use std::fs::File;
 use std::fs::OpenOptions;
 #[tokio::main]
 async fn main() -> Result<(), ()> {
-    // let resp = reqwest::get("http://vietnam:L3xRay123!@10.50.29.56/jpgimage/1/image.jpg")
-    //     .await?;
-    // println!("{:#?}", resp);
+    // tokio::spawn(async {
+    //     let client = reqwest::Client::new();
+    //     let cam_url = "http://10.50.29.96/mjpgstreamreq/1/image.jpg";
+    //     let _resp = client.get(cam_url).send().await.unwrap();
+    //     println!("Async task 1 started.");
+    // });
+    // tokio::spawn(async {
+    //     let client = reqwest::Client::new();
+    //     let cam_url = "http://10.50.29.96/mjpgstreamreq/1/image.jpg";
+    //     let _resp = client.get(cam_url).send().await.unwrap();
+    //     println!("Async task 2 started.");
+    // });
+    // tokio::spawn(async {
+    //     let client = reqwest::Client::new();
+    //     let cam_url = "http://10.50.29.96/mjpgstreamreq/1/image.jpg";
+    //     let _resp = client.get(cam_url).send().await.unwrap();
+    //     println!("Async task 3 started.");
+    // });
 
-    // let img_bytes = reqwest::get("http://vietnam:L3xRay123!@10.50.29.56/jpgimage/1/image.jpg").await?
-    // let img_bytes = reqwest::get("http://192.168.1.11:88/cgi-bin/CGIStream.cgi?cmd=GetMJStream&usr=test&pwd=test123").await?
-    // .bytes().await?;
-
-    // let mut file = File::create("foo.txt").unwrap();
-    // let mut img_bytes = reqwest::get("http://climatecam.gi.alaska.edu/mjpg/video.mjpg").await?;
-    // while let Some(chunk) = img_bytes.chunk().await? {
-    //     println!("Chunk: {:?}", chunk);
-    //     file.write_all(&chunk).unwrap();
-    //     // let image = image::load_from_memory(&chunk)?;
-    //     // image.save("output.jpeg")?;
-    // }
-
-    // let mut file = File::create("foo.txt").unwrap();
-    // let mut file_frame = OpenOptions::new()
-    //     .read(true)
-    //     .write(true)
-    //     .create(true)
-    //     .open("frame.txt")
-    //     .unwrap();
-
+    
     let client = reqwest::Client::new();
 
     const SOI: u8 = 0xD8;
@@ -58,7 +53,7 @@ async fn main() -> Result<(), ()> {
     // let cam_url = "http://vietnam:L3xRay123!@10.50.13.89/mjpgstreamreq/1/image.jpg";
     // let cam_url = "http://10.50.29.36:80/mjpgstreamreq/1/image.jpg?resolution=640x480";
     // let cam_url = "http://10.50.31.241/mjpg/1/video.mjpg";
-    // let cam_url = "http://vietnam:L3xRay123!@10.50.30.212/mjpgstreamreq/1/image.jpg";
+    let cam_url = "http://vietnam:L3xRay123!@10.50.30.212/mjpgstreamreq/1/image.jpg";
     // let cam_url = "http://vietnam:L3xRay123!@10.50.13.89/mjpgstreamreq/1/image.jpg";
     // let cam_url = "http://vietnam:L3xRay12@10.50.31.179/mjpg/1/video.mjpg";
     // let cam_url = "http://vietnam:L3xRay12@10.50.31.179:80/mjpg/1/video.mjpg";
@@ -73,7 +68,7 @@ async fn main() -> Result<(), ()> {
     // let cam_url = "http://10.50.29.32/mjpgstreamreq/1/image.jpg";
     // let cam_url = "http://10.50.29.96/mjpgstreamreq/1/image.jpg";
     // let cam_url = "http://10.50.30.197/mjpgstreamreq/1/image.jpg";
-    let cam_url = "http://10.50.29.77/mjpgstreamreq/1/image.jpg";
+    // let cam_url = "http://10.50.29.77/mjpgstreamreq/1/image.jpg";
     // let cam_url = "http://10.50.30.118/mjpgstreamreq/1/image.jpg";
     // let cam_url = "http://10.50.31.236/mjpgstreamreq/1/image.jpg";
     // let cam_url = "http://10.50.31.241/mjpg/1/video.mjpg";
@@ -122,7 +117,7 @@ async fn main() -> Result<(), ()> {
     loop {
         let response = match answer.as_str() {
             "" => {
-                println!("Basic: {:?}", basic_url.port());
+                println!("Basic");
                 client
                 .get(cam_url)
                 // .basic_auth(username, Some(password))
@@ -131,7 +126,7 @@ async fn main() -> Result<(), ()> {
                 .await
                 .unwrap()},
             _ => {
-                println!("Digest: {:?}", basic_url.port());
+                println!("Digest");
                 client
                     .get(digest_url.as_str())
                     // .basic_auth("vietnam", Some("L3xRay123!"))
@@ -173,16 +168,17 @@ async fn main() -> Result<(), ()> {
                         frame_buffer.len()
                     );
 
-                    let img_result =
-                        image::load_from_memory_with_format(&frame_buffer, ImageFormat::Jpeg);
-                    let img = match img_result {
-                        Ok(image) => image,
-                        Err(_) => return Err(()),
-                    };
-                    img.save(format!("img-{}.jpg", count)).unwrap();
-                    let img16 = img.into_rgb8();
-                    let data = img16.into_raw() as Vec<u8>;
-                    println!("Image length: {}", data.len());
+                    //SAVING IMAGE
+                    // let img_result =
+                    //     image::load_from_memory_with_format(&frame_buffer, ImageFormat::Jpeg);
+                    // let img = match img_result {
+                    //     Ok(image) => image,
+                    //     Err(_) => return Err(()),
+                    // };
+                    // img.save(format!("img-{}.jpg", count)).unwrap();
+                    // let img16 = img.into_rgb8();
+                    // let data = img16.into_raw() as Vec<u8>;
+                    // println!("Image length: {}", data.len());
                     count += 1;
 
                     let _drain: Vec<_> = store_buffer.drain(..=i + 1).collect();
@@ -217,22 +213,7 @@ async fn main() -> Result<(), ()> {
         }
         println!("CAMERA IZ DAED");
     }
-    return Ok(());
-}
-
-fn split_authorize_for_digest_auth(cam_url: &str) -> (&str, &str, String) {
-    let auth_idx = cam_url.find('@');
-    if auth_idx.is_some() {
-        let tokens: Vec<&str> = cam_url.split('@').collect();
-        println!("tokens: {:?}", tokens);
-        let http_idx = tokens[0].rfind("/").unwrap();
-        let (http_path, auth_path) = tokens[0].split_at(http_idx + 1);
-        println!("auth_path: {}", auth_path);
-        let usr_pwd: Vec<&str> = auth_path.split(':').collect();
-        println!("usr: {} - pwd: {}", usr_pwd[0], usr_pwd[1]);
-        let url = format!("http://{}", tokens[1]);
-        (usr_pwd[0], usr_pwd[1], url)
-    } else {
-        ("", "", cam_url.to_string())
-    }
+    // tokio::time::sleep(tokio::time::Duration::from_secs(60)).await;
+    // println!("End of sleep");
+    // return Ok(());
 }
