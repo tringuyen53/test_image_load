@@ -33,11 +33,11 @@ async fn main() -> Result<(), reqwest::Error> {
 
 
     
-    // let client = reqwest::Client::builder()
-    // .timeout(time::Duration::from_secs(60))
-    // .build().unwrap();
+    let client = reqwest::Client::builder()
+    .timeout(time::Duration::from_secs(60))
+    .build().unwrap();
 
-    let client = reqwest::Client::new();
+    // let client = reqwest::Client::new();
 
     const SOI: u8 = 0xD8;
     ///     End of image
@@ -54,7 +54,7 @@ async fn main() -> Result<(), reqwest::Error> {
     // let cam_url = "http://vietnam:L3xRay123!@10.50.29.64/mjpg/1/video.mjpg"; //digest
     // let cam_url = "http://climatecam.gi.alaska.edu/mjpg/video.mjpg";
     // let cam_url = "http://vietnam:L3xRay123!@10.50.31.178/mjpg/1/video.mjpg?resolution=640x480"; //digest
-    let cam_url = "http://vietnam:L3xRay123!@10.50.29.117/mjpgstreamreq/1/image.jpg";
+    // let cam_url = "http://vietnam:L3xRay123!@10.50.29.117/mjpgstreamreq/1/image.jpg";
     // let cam_url = "http://vietnam:L3xRay123!@10.50.29.56/mjpgstreamreq/1/image.jpg";
     // let cam_url = "http://10.50.31.39/mjpg/1/video.mjpg?resolution=640x480";
     // let cam_url = "http://10.50.29.36/mjpgstreamreq/1/image.jpg";
@@ -70,6 +70,7 @@ async fn main() -> Result<(), reqwest::Error> {
     // let cam_url = "http://vietnam:L3xRay123!@10.50.30.108/mjpgstreamreq/1/image.jpg";
     // let cam_url = "http://vietnam:L3xRay123!@10.50.29.36/jpgimage/1/image.jpg";
     // let cam_url = "http://vietnam:L3xRay123!@10.50.29.22/mjpgstreamreq/1/image.jpg";
+    let cam_url = "http://vietnam:L3xRay123!@10.50.30.211/mjpgstreamreq/1/image.jpg";
     // unauth
     // let cam_url = "http://10.50.30.100/mjpgstreamreq/1/image.jpg";
     // let cam_url = "http://10.50.13.23/mjpgstreamreq/1/image.jpg";
@@ -131,6 +132,7 @@ async fn main() -> Result<(), reqwest::Error> {
                 println!("Basic");
                 client
                     .get(cam_url)
+                    // .timeout(time::Duration::from_secs(60))
                     // .basic_auth(username, Some(password))
                     // .header(reqwest::header::AUTHORIZATION, answer.clone())
                     .send()
@@ -168,6 +170,9 @@ async fn main() -> Result<(), reqwest::Error> {
 
         let mut stream = response.bytes_stream();
         while let Some(chunk) = stream.next().await {
+            if chunk.is_err() {
+                continue;
+            }
             let chunk_fake = chunk.unwrap().clone();
             store_buffer.extend_from_slice(&chunk_fake);
 
