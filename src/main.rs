@@ -4,11 +4,12 @@ use http::Uri;
 use image;
 use image::{GenericImage, GenericImageView, ImageBuffer, ImageFormat, RgbImage};
 use reqwest::Url;
+use core::time;
 use std::collections::HashMap;
 use std::fs::File;
 use std::fs::OpenOptions;
 #[tokio::main]
-async fn main() -> Result<(), ()> {
+async fn main() -> Result<(), reqwest::Error> {
     // tokio::spawn(async {
     //     let client = reqwest::Client::new();
     //     let cam_url = "http://10.50.29.96/mjpgstreamreq/1/image.jpg";
@@ -28,7 +29,12 @@ async fn main() -> Result<(), ()> {
     //     println!("Async task 3 started.");
     // });
 
+
     
+    // let client = reqwest::Client::builder()
+    // .timeout(time::Duration::from_secs(60))
+    // .build().unwrap();
+
     let client = reqwest::Client::new();
 
     const SOI: u8 = 0xD8;
@@ -46,14 +52,14 @@ async fn main() -> Result<(), ()> {
     // let cam_url = "http://vietnam:L3xRay123!@10.50.29.64/mjpg/1/video.mjpg"; //digest
     // let cam_url = "http://climatecam.gi.alaska.edu/mjpg/video.mjpg";
     // let cam_url = "http://vietnam:L3xRay123!@10.50.31.178/mjpg/1/video.mjpg?resolution=640x480"; //digest
-    // let cam_url = "http://vietnam:L3xRay123!@10.50.29.117/mjpgstreamreq/1/image.jpg";
+    let cam_url = "http://vietnam:L3xRay123!@10.50.29.117/mjpgstreamreq/1/image.jpg";
     // let cam_url = "http://vietnam:L3xRay123!@10.50.29.56/mjpgstreamreq/1/image.jpg";
     // let cam_url = "http://10.50.31.39/mjpg/1/video.mjpg?resolution=640x480";
     // let cam_url = "http://10.50.29.36/mjpgstreamreq/1/image.jpg";
     // let cam_url = "http://vietnam:L3xRay123!@10.50.13.89/mjpgstreamreq/1/image.jpg";
     // let cam_url = "http://10.50.29.36:80/mjpgstreamreq/1/image.jpg?resolution=640x480";
     // let cam_url = "http://10.50.31.241/mjpg/1/video.mjpg";
-    let cam_url = "http://vietnam:L3xRay123!@10.50.30.212/mjpgstreamreq/1/image.jpg";
+    // let cam_url = "http://vietnam:L3xRay123@10.50.30.212/mjpgstreamreq/1/image.jpg";
     // let cam_url = "http://vietnam:L3xRay123!@10.50.13.89/mjpgstreamreq/1/image.jpg";
     // let cam_url = "http://vietnam:L3xRay12@10.50.31.179/mjpg/1/video.mjpg";
     // let cam_url = "http://vietnam:L3xRay12@10.50.31.179:80/mjpg/1/video.mjpg";
@@ -91,40 +97,43 @@ async fn main() -> Result<(), ()> {
     digest_url.set_password(None);
     // digest_url.set_port(Some(80));
 
-    let resp = client.get(digest_url.as_str()).send().await.unwrap();
-    let header = resp.headers();
-    println!("Header: {:?}", header);
     println!("CAM URL: {}", basic_url);
     println!("CAM DIGEST URL: {}", digest_url);
+    let resp = surf::get(digest_url.as_str()).await;
+    if resp.is_err() {
+        println!("Requeset header error {:?}",resp.err());
+        return Ok(());
+    }
+    let resp = resp.unwrap();
     // println!("Port: {:?}", basic_url.port());
     println!("usr: {} - pwd: {}", username, password);
     // println!("[CAMERA] CAMERA STATUS {:?}", resp.status());
-    if let Some(value) = header.get("www-authenticate") {
-        if let Ok(value) = value.to_str() {
-            match value.split_once(' ').unwrap_or_default().0 {
-                "Digest" => {
-                    println!("Digest Camera.");
-                    let mut prompt = digest_auth::parse(value).unwrap();
-                    let context = AuthContext::new(username, password, digest_url.path());
-                    answer = prompt.respond(&context).unwrap().to_header_string();
-                    println!("Answer: {:?}", answer);
-                }
-                _ => {}
+    if let Some(value) = resp.header("www-authenticate") {
+        match value.to_string().split_once(' ').unwrap_or_default().0 {
+            "Digest" => {
+                println!("Digest Camera.");
+                let mut prompt = digest_auth::parse(&value.to_string()).unwrap();
+                let context = AuthContext::new(username, password, digest_url.path());
+                answer = prompt.respond(&context).unwrap().to_header_string();
+                println!("Answer: {:?}", answer);
             }
+            _ => {}
         }
     }
 
-    loop {
+    let mut retry_count = 0;
+    'main: while retry_count < 6 {
+        smol::Timer::after(std::time::Duration::from_secs(2u64.pow(retry_count)));
         let response = match answer.as_str() {
             "" => {
                 println!("Basic");
                 client
-                .get(cam_url)
-                // .basic_auth(username, Some(password))
-                // .header(reqwest::header::AUTHORIZATION, answer.clone())
-                .send()
-                .await
-                .unwrap()},
+                    .get(cam_url)
+                    // .basic_auth(username, Some(password))
+                    // .header(reqwest::header::AUTHORIZATION, answer.clone())
+                    .send()
+                    .await
+            }
             _ => {
                 println!("Digest");
                 client
@@ -133,11 +142,26 @@ async fn main() -> Result<(), ()> {
                     .header(reqwest::header::AUTHORIZATION, answer.clone())
                     .send()
                     .await
-                    .unwrap()
             }
         };
+        if response.is_err() {
+            println!("Response error");
 
-        println!("[CAMERA] CAMERA STATUS {:?}", response.status());
+            retry_count += 1;
+            // continue;
+            break;
+        } else {
+            retry_count = 0;
+        }
+        let response = response.unwrap();
+        let status_code = response.status().as_u16();
+        println!("[CAMERA] CAMERA STATUS {:?}", status_code);
+        if status_code == 401 {
+            println!("Unauthorized");
+            // *is_frame_getting.lock().unwrap() = false;
+            // retry_count += 1;
+            break 'main;
+        }
 
         let mut stream = response.bytes_stream();
         while let Some(chunk) = stream.next().await {
@@ -146,12 +170,12 @@ async fn main() -> Result<(), ()> {
 
             let mut i = 0;
             let length = store_buffer.len();
-            println!("chunk length: {}", chunk_fake.len());
-            println!(
-                "Before traverse through store buffer: {}",
-                store_buffer.len()
-            );
-            println!("START LOOP");
+            // println!("chunk length: {}", chunk_fake.len());
+            // println!(
+            //     "Before traverse through store buffer: {}",
+            //     store_buffer.len()
+            // );
+            // println!("START LOOP");
             while i < length {
                 if i == length - 1 {
                     frame_buffer.push(store_buffer[i]);
@@ -204,15 +228,16 @@ async fn main() -> Result<(), ()> {
                 }
                 i += 1;
             }
-            println!("END LOOP");
+            // println!("END LOOP");
             if store_buffer.len() == 18 {
                 println!("Fuk im out!");
                 store_buffer.clear();
                 break;
             }
         }
-        println!("CAMERA IZ DAED");
+        println!("End of request");
     }
+    Ok(())
     // tokio::time::sleep(tokio::time::Duration::from_secs(60)).await;
     // println!("End of sleep");
     // return Ok(());
