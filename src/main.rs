@@ -8,6 +8,8 @@ use core::time;
 use std::collections::HashMap;
 use std::fs::File;
 use std::fs::OpenOptions;
+use reqwest::header::CONNECTION;
+
 #[tokio::main]
 async fn main() -> Result<(), reqwest::Error> {
     // tokio::spawn(async {
@@ -138,6 +140,7 @@ async fn main() -> Result<(), reqwest::Error> {
                 println!("Digest");
                 client
                     .get(digest_url.as_str())
+                    .header(CONNECTION, "close")
                     // .basic_auth("vietnam", Some("L3xRay123!"))
                     .header(reqwest::header::AUTHORIZATION, answer.clone())
                     .send()
