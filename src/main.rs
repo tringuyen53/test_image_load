@@ -36,12 +36,11 @@ async fn main() -> Result<(), reqwest::Error> {
     // });
 
     let client = reqwest::Client::builder()
-    // .timeout(time::Duration::from_secs(30))
-    .build().unwrap();
+        // .timeout(time::Duration::from_secs(30))
+        .build()
+        .unwrap();
 
     // let client = reqwest::Client::new();
-
-    
 
     const SOI: u8 = 0xD8;
     ///     End of image
@@ -58,40 +57,40 @@ async fn main() -> Result<(), reqwest::Error> {
     // let cam_url = "http://vietnam:L3xRay123!@10.50.29.64/mjpg/1/video.mjpg"; //digest
     // let cam_url = "http://climatecam.gi.alaska.edu/mjpg/video.mjpg";
     let cam_url = "http://vietnam:L3xRay123!@10.50.31.178/mjpg/1/video.mjpg"; //digest
-    // let cam_url = "http://vietnam:L3xRay123!@10.50.29.117/mjpgstreamreq/1/image.jpg";
-    // let cam_url = "http://vietnam:L3xRay123!@10.50.29.56/mjpgstreamreq/1/image.jpg";
-    // let cam_url = "http://10.50.31.39/mjpg/1/video.mjpg?resolution=640x480";
-    // let cam_url = "http://10.50.29.36/mjpgstreamreq/1/image.jpg";
-    // let cam_url = "http://vietnam:L3xRay123!@10.50.13.89/mjpgstreamreq/1/image.jpg";
-    // let cam_url = "http://10.50.29.36:80/mjpgstreamreq/1/image.jpg?resolution=640x480";
-    // let cam_url = "http://10.50.31.241/mjpg/1/video.mjpg";
-    // let cam_url = "http://vietnam:L3xRay123@10.50.30.212/mjpgstreamreq/1/image.jpg";
-    // let cam_url = "http://vietnam:L3xRay123!@10.50.13.89/mjpgstreamreq/1/image.jpg";
-    // let cam_url = "http://vietnam:L3xRay12@10.50.31.179/mjpg/1/video.mjpg";
-    // let cam_url = "http://vietnam:L3xRay12@10.50.31.179:80/mjpg/1/video.mjpg";
-    // let cam_url = "http://vietnam:L3xRay123@10.50.12.187:80/video/mjpeg/stream2";
-    // let cam_url = "http://10.50.13.23/mjpgstreamreq/1/image.jpg";
-    // let cam_url = "http://vietnam:L3xRay123!@10.50.30.108/mjpgstreamreq/1/image.jpg";
-    // let cam_url = "http://vietnam:L3xRay123!@10.50.29.36/jpgimage/1/image.jpg";
-    // let cam_url = "http://vietnam:L3xRay123!@10.50.29.22/mjpgstreamreq/1/image.jpg";
-    // let cam_url = "http://vietnam:L3xRay123!@10.50.30.211/mjpgstreamreq/1/image.jpg";
-    // unauth
-    // let cam_url = "http://10.50.30.100/mjpgstreamreq/1/image.jpg";
-    // let cam_url = "http://10.50.13.23/mjpgstreamreq/1/image.jpg";
-    // let cam_url = "http://10.50.29.32/mjpgstreamreq/1/image.jpg";
-    // let cam_url = "http://10.50.29.96/mjpgstreamreq/1/image.jpg";
-    // let cam_url = "http://10.50.30.197/mjpgstreamreq/1/image.jpg";
-    // let cam_url = "http://10.50.29.77/mjpgstreamreq/1/image.jpg";
-    // let cam_url = "http://10.50.30.118/mjpgstreamreq/1/image.jpg";
-    // let cam_url = "http://10.50.31.236/mjpgstreamreq/1/image.jpg";
-    // let cam_url = "http://10.50.31.241/mjpg/1/video.mjpg";
-    // let cam_url = "http://10.50.29.162/mjpgstreamreq/1/image.jpg";
-    // let cam_url = "http://10.50.31.171/mjpgstreamreq/1/image.jpg";
-    // let cam_url = "http://10.50.31.53/mjpgstreamreq/1/image.jpg";
-    // let cam_url = "http://10.50.31.172/mjpgstreamreq/1/image.jpg";
-    // let cam_url = "http://10.50.31.78/mjpgstreamreq/1/image.jpg";
-    // let cam_url = "http://10.50.31.74/mjpgstreamreq/1/image.jpg";
-    // let cam_url = "http://10.50.31.169/mjpgstreamreq/1/image.jpg";
+                                                                              // let cam_url = "http://vietnam:L3xRay123!@10.50.29.117/mjpgstreamreq/1/image.jpg";
+                                                                              // let cam_url = "http://vietnam:L3xRay123!@10.50.29.56/mjpgstreamreq/1/image.jpg";
+                                                                              // let cam_url = "http://10.50.31.39/mjpg/1/video.mjpg?resolution=640x480";
+                                                                              // let cam_url = "http://10.50.29.36/mjpgstreamreq/1/image.jpg";
+                                                                              // let cam_url = "http://vietnam:L3xRay123!@10.50.13.89/mjpgstreamreq/1/image.jpg";
+                                                                              // let cam_url = "http://10.50.29.36:80/mjpgstreamreq/1/image.jpg?resolution=640x480";
+                                                                              // let cam_url = "http://10.50.31.241/mjpg/1/video.mjpg";
+                                                                              // let cam_url = "http://vietnam:L3xRay123@10.50.30.212/mjpgstreamreq/1/image.jpg";
+                                                                              // let cam_url = "http://vietnam:L3xRay123!@10.50.13.89/mjpgstreamreq/1/image.jpg";
+                                                                              // let cam_url = "http://vietnam:L3xRay12@10.50.31.179/mjpg/1/video.mjpg";
+                                                                              // let cam_url = "http://vietnam:L3xRay12@10.50.31.179:80/mjpg/1/video.mjpg";
+                                                                              // let cam_url = "http://vietnam:L3xRay123@10.50.12.187:80/video/mjpeg/stream2";
+                                                                              // let cam_url = "http://10.50.13.23/mjpgstreamreq/1/image.jpg";
+                                                                              // let cam_url = "http://vietnam:L3xRay123!@10.50.30.108/mjpgstreamreq/1/image.jpg";
+                                                                              // let cam_url = "http://vietnam:L3xRay123!@10.50.29.36/jpgimage/1/image.jpg";
+                                                                              // let cam_url = "http://vietnam:L3xRay123!@10.50.29.22/mjpgstreamreq/1/image.jpg";
+                                                                              // let cam_url = "http://vietnam:L3xRay123!@10.50.30.211/mjpgstreamreq/1/image.jpg";
+                                                                              // unauth
+                                                                              // let cam_url = "http://10.50.30.100/mjpgstreamreq/1/image.jpg";
+                                                                              // let cam_url = "http://10.50.13.23/mjpgstreamreq/1/image.jpg";
+                                                                              // let cam_url = "http://10.50.29.32/mjpgstreamreq/1/image.jpg";
+                                                                              // let cam_url = "http://10.50.29.96/mjpgstreamreq/1/image.jpg";
+                                                                              // let cam_url = "http://10.50.30.197/mjpgstreamreq/1/image.jpg";
+                                                                              // let cam_url = "http://10.50.29.77/mjpgstreamreq/1/image.jpg";
+                                                                              // let cam_url = "http://10.50.30.118/mjpgstreamreq/1/image.jpg";
+                                                                              // let cam_url = "http://10.50.31.236/mjpgstreamreq/1/image.jpg";
+                                                                              // let cam_url = "http://10.50.31.241/mjpg/1/video.mjpg";
+                                                                              // let cam_url = "http://10.50.29.162/mjpgstreamreq/1/image.jpg";
+                                                                              // let cam_url = "http://10.50.31.171/mjpgstreamreq/1/image.jpg";
+                                                                              // let cam_url = "http://10.50.31.53/mjpgstreamreq/1/image.jpg";
+                                                                              // let cam_url = "http://10.50.31.172/mjpgstreamreq/1/image.jpg";
+                                                                              // let cam_url = "http://10.50.31.78/mjpgstreamreq/1/image.jpg";
+                                                                              // let cam_url = "http://10.50.31.74/mjpgstreamreq/1/image.jpg";
+                                                                              // let cam_url = "http://10.50.31.169/mjpgstreamreq/1/image.jpg";
     let mut count: i32 = 1;
 
     // let client: Client = surf::Config::new()
@@ -163,29 +162,37 @@ async fn main() -> Result<(), reqwest::Error> {
     //         println!("Response first error: {:?}", e);
     //     }
     // }
-    let response = surf::get(digest_url.as_str()).await.unwrap();
+    // let response = surf::get(digest_url.as_str()).await.unwrap();
     let mut answer = String::new();
-    println!("response header: {:?}", response.header("www-authenticate").unwrap());
+    let www_authenticate = "Digest username=\"vietnam\", realm=\"AXIS_ACCC8E718940\", nonce=\"P/NWsZJ6BQA=b094ae88db368763469e4ea282d9e9ae54edaa12\", uri=\"http://10.50.31.178/mjpg/1/video.mjpg\", qop=auth, nc=00000001, cnonce=\"18beae8d4a363408e15006456039b286\", response=\"569108fb28d63151254ce7dda095a375\", algorithm=MD5";
+    // println!(
+    //     "response header: {:?}",
+    //     response.header("www-authenticate").unwrap()
+    // );
+    let mut prompt = digest_auth::parse(&www_authenticate).unwrap();
+    let context = AuthContext::new(username, password, digest_url.as_str());
+    answer = prompt.respond(&context).unwrap().to_header_string();
 
-    match response.header("www-authenticate") {
-        Some(value) => {
-            println!("Value: {:?}", value.as_str().split_once(' ').unwrap().0);
-            match value.as_str().split_once(' ').unwrap().0 {
-            "Digest" => {
-                println!("Digest");
-                let mut prompt = digest_auth::parse(&value.as_str()).unwrap();
-                let context = AuthContext::new(username, password, digest_url.as_str());
-                answer = prompt.respond(&context).unwrap().to_header_string();
-            }
-            _ => {
-                println!("Basic");
-            }
-        }},
-        None => {answer = "".to_owned()}
-    }
-    println!("Answer: {:?}", answer);   
+    // match response.header("www-authenticate") {
+    //     Some(value) => {
+    //         println!("Value: {:?}", value.as_str().split_once(' ').unwrap().0);
+    //         match value.as_str().split_once(' ').unwrap().0 {
+    //             "Digest" => {
+    //                 println!("Digest");
+    //                 let mut prompt = digest_auth::parse(&value.as_str()).unwrap();
+    //                 let context = AuthContext::new(username, password, digest_url.as_str());
+    //                 answer = prompt.respond(&context).unwrap().to_header_string();
+    //             }
+    //             _ => {
+    //                 println!("Basic");
+    //             }
+    //         }
+    //     }
+    //     None => answer = "".to_owned(),
+    // }
+    println!("Answer: {:?}", answer);
     // loop {}
-    
+
     // if let Some(value) = header.get("www-authenticate") {
     //     if let Ok(value) = value.to_str() {
     //         match value.split_once(' ').unwrap_or_default().0 {
@@ -203,7 +210,6 @@ async fn main() -> Result<(), reqwest::Error> {
     // resp.bytes_stream().take(0);
     // drop(stream);
 
-
     let mut retry_count = 0;
     'main: while retry_count < 6 {
         // smol::Timer::after(std::time::Duration::from_secs(2u64.pow(retry_count)));
@@ -219,19 +225,23 @@ async fn main() -> Result<(), reqwest::Error> {
                     .await
             }
             _ => {
-                println!("Digest {:?}: {:?}",digest_url.as_str(), answer.clone());
+                println!("Digest {:?}: {:?}", digest_url.as_str(), answer.clone());
                 client
                     .get(digest_url.as_str())
                     // .header(CONNECTION, "close")
                     // .basic_auth("vietnam", Some("L3xRay123!"))
-                    .header(reqwest::header::AUTHORIZATION, answer.clone())
+                    .header(reqwest::header::AUTHORIZATION, &answer)
                     .send()
                     .await
             }
         };
         if response.is_err() {
             smol::Timer::after(std::time::Duration::from_secs(2u64.pow(retry_count))).await;
-            println!("Response error after {:?} retry: {:?}", retry_count, response.err());
+            println!(
+                "Response error after {:?} retry: {:?}",
+                retry_count,
+                response.err()
+            );
 
             retry_count += 1;
             continue;
