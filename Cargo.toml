@@ -16,3 +16,5 @@ digest_auth = "0.3.0"
 http = "0.2.4"
 surf = "2.2.0"
 smol = "*"
+hyper = { version = "0.14", features = ["full"] }
+async-std = "*"

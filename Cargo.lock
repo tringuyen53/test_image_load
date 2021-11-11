@@ -1669,9 +1669,11 @@ dependencies = [
 name = "request-mjpeg-test"
 version = "0.1.0"
 dependencies = [
+ "async-std",
  "digest_auth",
  "futures-util",
  "http",
+ "hyper",
  "image",
  "reqwest",
  "smol",
